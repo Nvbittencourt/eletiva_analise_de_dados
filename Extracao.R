@@ -49,3 +49,23 @@ str(sinistros19e20e21[, 1])
 sinistros19e20e21$natureza_acidente <- as.factor(sinistros19e20e21$natureza_acidente)
 str(sinistros19e20e21$natureza_acidente)
 
+naZero <- function(x) {
+  x <- ifelse(is.na(x), 0, x)
+}
+
+# Área de Armazenamento e uso de memória
+
+# lista de todos os objetos no R
+ls() 
+
+for (itm in ls()) { 
+  print(formatC(c(itm, object.size(get(itm))), 
+                format="d", 
+                width=30), 
+        quote=F)
+}
+
+#O que ocupa mais espaço é o sinistros19e20e21 e o sinistrosRecife2019Raw em seguida.
+
+rm(list = c('sinistros19e20e21', 'sinistrosRecife2019novo', 'sinistrosRecife2019Raw', 'sinistrosRecife2020Raw', 'sinistrosRecife2021Raw'))
+ls()
