@@ -77,3 +77,105 @@ WesternEurope_validacao <- confront(WesternEurope, WesternEurope_regras)
 summary(WesternEurope_validacao) 
 
 plot(WesternEurope_validacao) 
+
+####### 6) Tipos de fatores
+
+# Criar uma estrutura de Fatores
+
+Covid_variantes <- factor(c("alfa", "beta", "gama", "delta"))
+Covid_pais_variante <- c(Reino_Unido = 'alfa', Africa_do_Sul = 'beta', Brasil = 'gama', Índia = 'delta')
+(Variantes_países <- factor(Covid_variantes, levels = Covid_pais_variante, labels = names(Covid_pais_variante)))
+
+is.numeric(Variantes_países)
+as.numeric(Variantes_países)
+as.integer(Variantes_países)
+as.character(Variantes_países)
+
+###### 7) Mais fatores
+
+# Criar processo de one hot encoding ou de discretização
+# e também a transformação dos fatores de uma base de dados em 3 tipos: 
+# mais frequente, segundo mais frequente e outros.
+
+install.packages("ade4")
+install.packages("arules")
+installed.packages("forcats")
+library(ade4)
+library(arules)
+library(forcats)
+
+getwd()
+facebook <- read.table("dataset_Facebook.csv", sep=";", header = T)
+
+str(facebook) 
+
+# conversão em fatores
+
+for(i in 2:7) {facebook[,i] <- as.factor(facebook[,i]) }
+
+str(facebook) 
+
+# filtro por tipo de dado
+
+factorsFacebook <- unlist(lapply(facebook, is.factor)) 
+
+facebookFactor <- facebook[ , factorsFacebook] 
+
+str(facebookFactor) 
+
+# Hot one coding
+
+facebookDummy <- acm.disjonctif(facebookFactor)  
+
+# forcats - usando tidyverse para fatores
+
+fct_count(facebookFactor$Type) 
+
+fct_lump(facebookFactor$Type, n = 2) 
+
+###### 8) Data Table
+
+library(data.table)
+library(dplyr)
+
+# dados
+
+mtcarsDT <- mtcars %>% setDT() 
+class(mtcarsDT)
+
+#Regressao Linear
+
+mtcarsDT[ , lm(formula = mpg ~ cyl + disp + hp + drat)]
+
+summary(mtcarsDT)
+plot(mtcarsDT)
+
+###### 9) Pacote Dplyr
+
+library(dplyr)
+
+count(facebook, Type) 
+
+# sumários com agrupamentos
+facebook %>% group_by(Type) %>% summarise(avg = mean(like))
+
+### Transformação de Casos
+
+# seleção de casos
+facebook %>%  filter(Type != "Photo") %>% summarise(avg = mean(like))
+facebook %>%  filter(Type != "Photo") %>% group_by(Type, Paid) %>% summarise(avg = mean(like))
+
+# ordenar casos
+arrange(facebook, like) # ascendente
+arrange(facebook, desc(like)) # descendente
+
+### Transformação de Variáveis
+
+# seleção de colunas
+facebook %>% select(like, Type, Paid) %>% arrange(like)
+
+# novas colunas
+facebook %>% mutate(likePerLifeTime = like/Lifetime.Post.Total.Reach)
+
+# renomear
+facebook %>% rename(Reach = Lifetime.Post.Total.Reach)
